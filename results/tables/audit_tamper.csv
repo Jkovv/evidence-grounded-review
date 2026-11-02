@@ -1,0 +1,8 @@
+tampering,detected,first_bad_entry,reason
+edit a payload field,True,1.0,entry hash does not match its content
+delete an entry,True,1.0,sequence number 2 where 1 was expected
+insert an entry,True,2.0,previous hash does not match the preceding entry
+swap two entries,True,1.0,sequence number 2 where 1 was expected
+truncate the tail,True,223864.0,"223864 entries found, 223865 expected"
+edit and recompute one hash,True,2.0,previous hash does not match the preceding entry
+none (control),False,,

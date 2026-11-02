@@ -1,0 +1,13 @@
+calibration,target,detector,flags,false_flags,achieved_false_flag_rate,lo,hi,recall_of_errors,false_flags_in_periods_with_an_injected_cell,false_flag_rate_outside_those_periods,replicates
+clean development data,0.05,plausibility,0.0,0.0,,,,0.0,0.0,,10
+clean development data,0.05,combined,3140.9,2485.0,0.7912187176228778,0.7492354596671446,0.8268290927170255,0.3561109544693733,1196.9,0.9930586230637382,10
+clean development data,0.1,plausibility,0.0,0.0,,,,0.0,0.0,,10
+clean development data,0.1,combined,3140.9,2485.0,0.7912187176228778,0.7492354596671446,0.8268290927170255,0.3561109544693733,1196.9,0.9930586230637382,10
+clean development data,0.2,plausibility,329.1,132.7,0.4010987920420952,0.33256319238110715,0.4628668516191883,0.10663420462923556,26.3,0.9989473684210527,10
+clean development data,0.2,combined,3367.5,2611.4,0.7755163321336083,0.7339245227086887,0.8114807806611153,0.41054855879965413,1219.3,0.9934994633377189,10
+injected development data (as pre-specified),0.05,plausibility,0.0,0.0,,,,0.0,0.0,,1
+injected development data (as pre-specified),0.05,combined,3118.0,2471.0,0.7924951892238614,0.7477205427812861,0.831009291501552,0.3541324575807334,1163.0,0.9931662870159453,1
+injected development data (as pre-specified),0.1,plausibility,0.0,0.0,,,,0.0,0.0,,1
+injected development data (as pre-specified),0.1,combined,3118.0,2471.0,0.7924951892238614,0.7477205427812861,0.831009291501552,0.3541324575807334,1163.0,0.9931662870159453,1
+injected development data (as pre-specified),0.2,plausibility,0.0,0.0,,,,0.0,0.0,,1
+injected development data (as pre-specified),0.2,combined,3118.0,2471.0,0.7924951892238614,0.7477205427812861,0.831009291501552,0.3541324575807334,1163.0,0.9931662870159453,1

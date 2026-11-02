@@ -31,3 +31,5 @@ htmlcov/
 .idea/
 .DS_Store
 Thumbs.db
+results/*.log
+results/test-report.xml
