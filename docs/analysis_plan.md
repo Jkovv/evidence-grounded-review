@@ -393,4 +393,45 @@ number in the README is traceable to a table. The validation package in
 
 ## Deviations
 
-None at the time of writing.
+All made after the first detection run on the SEC data was seen. None
+changes the rules, the score, the split, the injection or the budgets.
+
+1. **Calibration on clean development data, not on injected development
+   data.** As written, the calibration set was the scores of development
+   companies in the same replicate, injection included. In the first run this
+   gave zero Benjamini-Hochberg flags at every target: the injected errors put
+   scores in the thousands into every calibration set, so the smallest
+   attainable p-value (about 1 in 12,000 per item) could never pass the
+   step-up threshold over 164,000 tested cells. The calibration set is now the
+   scores of development companies on the data as filed, with no injection,
+   which is the inlier calibration set of Bates et al. 2023. It still
+   contains whatever real errors the filed data hold. The pre-specified
+   variant is kept as one extra run (`primary-injectedcal`) and reported in
+   the false-flag table so that the zero can be seen. The injection into
+   development companies is kept as planned but no longer enters any
+   calculation.
+2. **The primary comparison is degenerate and is reported as such.** The
+   identity rules alone flag about 1.8% of held-out cells, more than the
+   primary budget of 10 per 1,000 allows. Because the combined detector puts
+   rule flags first, it is identical to the rules-only detector at the
+   budgets of 2, 5 and 10 per 1,000, and the pre-specified difference is zero
+   by construction. The difference is still computed and reported; the
+   comparisons that carry information are plausibility against rules at
+   every budget and combined against rules at 20 per 1,000, both already
+   secondary analyses. No new detector was added after seeing the results.
+3. **Computed quantities in evidence records are rounded to the cent.**
+   Prediction, residual, scale, candidates and rule quantities are stored
+   with two decimals so that the template can write them in full and the
+   strict exact-match pass of the checker can verify them. Scores and
+   p-values are stored unrounded. The decision itself uses the unrounded
+   values; only the record changed.
+4. **The template no longer states the score.** It states the usual spread
+   (the scale) in dollars instead of "x times the usual spread", for the same
+   reason: a one-decimal score cannot be matched exactly against the record.
+5. **Local model.** The local open model is `qwen3:4b` rather than
+   `qwen3:8b`, because the 8 billion parameter model did not fit in the
+   memory available on the development machine next to the pipeline. The
+   backend is unchanged.
+6. **Rules and scores are computed for held-out companies only in a
+   replicate.** Development companies are scored once, on the filed data,
+   for the calibration. This changes runtime only.
