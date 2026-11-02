@@ -81,7 +81,8 @@ AMENDMENT_ABS_TOL = 1000.0
 N_TEXT_FLAGS = 20 if QUICK else 200
 N_TEXT_EXAMPLES = 50
 RAW_CONTEXT_PERIODS = 4
-LLM_BACKEND = os.environ.get("EGR_LLM_BACKEND", "")  # "", "anthropic" or "openai_compatible"
+# "", "anthropic", "openai_compatible" or "ollama"
+LLM_BACKEND = os.environ.get("EGR_LLM_BACKEND", "")
 LLM_MODEL = os.environ.get("EGR_LLM_MODEL", "")
 LLM_BASE_URL = os.environ.get("EGR_LLM_BASE_URL", "http://localhost:11434/v1")
 LLM_MAX_TOKENS = 400

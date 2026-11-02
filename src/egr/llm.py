@@ -137,12 +137,58 @@ class OpenAICompatibleBackend:
         return Generation(THINK_BLOCK.sub("", text).strip(), self.model, self.name, h, raw)
 
 
+class OllamaBackend:
+    """A local open model served by Ollama, through its native chat endpoint.
+
+    The native endpoint is used because it can switch a model's thinking mode
+    off, which the OpenAI-compatible endpoint of the same server cannot.
+    """
+
+    name = "ollama"
+
+    def __init__(self, model: str = "", base_url: str = config.LLM_BASE_URL) -> None:
+        self.model = model or "qwen3:4b"
+        self.base_url = base_url.rstrip("/").removesuffix("/v1")
+
+    def generate(self, system: str, user: str) -> Generation:
+        """One request with temperature 0 and thinking off."""
+        h = prompt_hash(system, user)
+        body: dict[str, Any] = {
+            "model": self.model,
+            "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+            "options": {
+                "temperature": 0,
+                "num_predict": config.LLM_MAX_TOKENS,
+                "seed": config.SEED,
+            },
+            "think": False,
+            "stream": False,
+        }
+        req = urllib.request.Request(
+            self.base_url + "/api/chat",
+            data=json.dumps(body).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=900) as r:
+                raw = r.read().decode("utf-8")
+        except Exception as e:
+            return Generation("", self.model, self.name, h, "", f"{type(e).__name__}: {e}")
+        try:
+            text = json.loads(raw)["message"]["content"]
+        except (KeyError, json.JSONDecodeError) as e:
+            return Generation("", self.model, self.name, h, raw, f"unexpected response: {e}")
+        return Generation(THINK_BLOCK.sub("", text).strip(), self.model, self.name, h, raw)
+
+
 def make_backend(kind: str = config.LLM_BACKEND, model: str = config.LLM_MODEL) -> Backend | None:
-    """The configured backend, or None when none is configured."""
+    """The configured backend (anthropic, openai_compatible or ollama), or None."""
     if kind == "anthropic":
         return AnthropicBackend(model)
     if kind == "openai_compatible":
         return OpenAICompatibleBackend(model)
+    if kind == "ollama":
+        return OllamaBackend(model)
     return None
 
 

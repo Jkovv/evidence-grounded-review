@@ -431,7 +431,11 @@ changes the rules, the score, the split, the injection or the budgets.
 5. **Local model.** The local open model is `qwen3:4b` rather than
    `qwen3:8b`, because the 8 billion parameter model did not fit in the
    memory available on the development machine next to the pipeline. The
-   backend is unchanged.
+   model is called through Ollama's native chat endpoint rather than its
+   OpenAI-compatible one, because only the native endpoint can switch the
+   model's thinking mode off; with thinking on, the model spent its token
+   budget on reasoning and returned empty letters. The OpenAI-compatible
+   backend remains available for other servers.
 6. **Rules and scores are computed for held-out companies only in a
    replicate.** Development companies are scored once, on the filed data,
    for the calibration. This changes runtime only.
