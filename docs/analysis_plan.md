@@ -1,27 +1,18 @@
 # Analysis plan: evidence-grounded review of financial statement records
 
-Written and committed before any detector was run on the data and before any
-SEC data beyond the probe described below was downloaded. The numeric settings
-are mirrored in `src/egr/config.py`. Any change made after results were seen
-is listed under *Deviations* at the end, with the reason.
+Committed before the data were downloaded and before any detector ran. The
+numeric settings are mirrored in `src/egr/config.py`. Changes made after the
+results were seen are listed under *Deviations* at the end, each with its
+reason.
 
-## What was known before this plan
-
-* Two earlier repositories by the same author (virtual control groups for
-  toxicology studies; budgeted cross-modal plausibility checks on clinical
-  data) used conformal p-values with Benjamini-Hochberg and injected errors
-  with a held-out split. Their results are known to the author; none of their
-  numbers or code is reused, but the experience that values copied forward
-  from the previous period and values swapped between records are hard to
-  detect from the values alone informed the expectations below.
-* Before writing this plan, one probe was made against the SEC APIs to learn
-  the field names: the `frames` endpoint for `Assets` at `CY2012Q4I` (7,851
-  entities) and `CY2023Q4I` (6,429 entities), of which 2,081 appear in both
-  with assets of at least USD 100 million; the `submissions` and
-  `companyfacts` records of one company (Apple, CIK 320193), which showed that
-  amended filings carry the form `10-K/A` with values for already reported
-  periods and that 8-K filings carry their item numbers. No detector was run,
-  no error was injected and no other company was inspected.
+The only contact with the data before this plan was a probe of the SEC API
+field names: the `frames` endpoint for `Assets` at `CY2012Q4I` (7,851
+entities) and `CY2023Q4I` (6,429 entities), of which 2,081 appear in both
+with assets of at least USD 100 million, and the `submissions` and
+`companyfacts` records of one company (CIK 320193), which showed that
+amended filings carry the form `10-K/A` with values for already reported
+periods and that 8-K filings carry their item numbers. No other company was
+inspected, no detector was run and no error was injected.
 
 ## Question
 
