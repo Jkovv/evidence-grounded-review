@@ -78,7 +78,7 @@ AMENDMENT_REL_TOL = 0.001
 AMENDMENT_ABS_TOL = 1000.0
 
 # query text
-N_TEXT_FLAGS = 20 if QUICK else 200
+N_TEXT_FLAGS = 20 if QUICK else 100
 N_TEXT_EXAMPLES = 50
 RAW_CONTEXT_PERIODS = 4
 # "", "anthropic", "openai_compatible" or "ollama"

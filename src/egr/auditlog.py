@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -51,8 +52,17 @@ class AuditLog:
             "prev_hash": self.prev_hash,
         }
         entry["hash"] = entry_hash(entry)
-        with open(self.path, "a", encoding="utf-8") as f:
-            f.write(canonical(entry) + "\n")
+        line = canonical(entry) + "\n"
+        for attempt in range(20):
+            try:
+                with open(self.path, "a", encoding="utf-8") as f:
+                    f.write(line)
+                break
+            except PermissionError:
+                # a file synchroniser or virus scanner can hold the file for a moment
+                if attempt == 19:
+                    raise
+                time.sleep(0.5)
         self.seq += 1
         self.prev_hash = entry["hash"]
         return entry

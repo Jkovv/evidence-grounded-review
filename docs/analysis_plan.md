@@ -439,3 +439,13 @@ changes the rules, the score, the split, the injection or the budgets.
 6. **Rules and scores are computed for held-out companies only in a
    replicate.** Development companies are scored once, on the filed data,
    for the calibration. This changes runtime only.
+7. **Local model and text sample.** The local open model is `llama3.2:3b`
+   through Ollama, not `qwen3:8b`: the 8 billion parameter model did not fit
+   in the memory available next to the pipeline, and `qwen3:4b` wrote its
+   reasoning into the letter even with thinking switched off (the texts were
+   rejected by the checker as a whole). The text sample is 100 flags rather
+   than 200, because the small model needs about a minute per text on the
+   development machine and the three variants run on the same flags. The
+   Anthropic backend is implemented and selected with
+   `EGR_LLM_BACKEND=anthropic`; it was not run here because no API key was
+   available in the environment.
