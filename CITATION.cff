@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: If you use this software or its results, please cite it as below.
+type: software
+title: "evidence-grounded-review: review of longitudinal, multi-source records with evidence-grounded outputs and controlled error rates"
+authors:
+  - family-names: Kowalczuk
+    given-names: Julia
+    email: j.kowalczuk326@gmail.com
+version: 0.1.0
+date-released: 2026-11-02
+license: MIT
+repository-code: https://github.com/Jkovv/evidence-grounded-review
+keywords:
+  - audit trail
+  - conformal prediction
+  - false discovery rate
+  - financial statements
+  - XBRL
+  - faithfulness
+  - validation

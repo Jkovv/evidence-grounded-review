@@ -1,0 +1,32 @@
+# SEC data is never committed; the manifest with checksums is (see data/README.md)
+data/raw/
+data/processed/
+data/*.log
+
+# row-level outputs derived from the data; aggregate tables and figures are committed
+results/cells/
+results/audit/
+results-quick/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+.coverage
+coverage.xml
+htmlcov/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
