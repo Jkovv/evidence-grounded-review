@@ -103,6 +103,13 @@ def budget_figure(metrics: pd.DataFrame, theme: str, out_dir: Path) -> Path:
         (axes[0], "errors_per_budgeted_flag", "Injected errors caught per budgeted flag"),
         (axes[1], "recall", "Recall of injected errors"),
     ):
+        ends = {
+            det: float(
+                data[data["detector"] == det].sort_values("budget_per_1000")[metric].iloc[-1]
+            )
+            for det in ("combined", "plausibility", "rules")
+        }
+        order = sorted(ends, key=lambda k: ends[k])
         for det in ("combined", "plausibility", "rules"):
             d = data[data["detector"] == det].sort_values("budget_per_1000")
             ax.plot(
@@ -127,7 +134,7 @@ def budget_figure(metrics: pd.DataFrame, theme: str, out_dir: Path) -> Path:
                 f"{last[metric]:.2f}",
                 (last["budget_per_1000"], last[metric]),
                 textcoords="offset points",
-                xytext=(6, 0),
+                xytext=(6, 9 * (order.index(det) - 1)),
                 va="center",
                 fontsize=9,
                 color=t["ink"],
@@ -135,6 +142,7 @@ def budget_figure(metrics: pd.DataFrame, theme: str, out_dir: Path) -> Path:
         ax.set_xscale("log")
         ax.set_xticks(list(config.BUDGETS_PER_1000))
         ax.set_xticklabels([str(b) for b in config.BUDGETS_PER_1000])
+        ax.minorticks_off()
         ax.set_xlabel("flags per 1,000 held-out cells")
         ax.set_title(title, loc="left", fontsize=11, color=t["ink"])
         ax.set_ylim(bottom=0)
@@ -210,7 +218,11 @@ def false_flag_figure(ffr: pd.DataFrame, theme: str, out_dir: Path) -> Path:
     ax.set_xlim(0, 0.25)
     ax.set_ylim(bottom=0)
     ax.set_title("False-flag rate on held-out companies", loc="left", fontsize=11, color=t["ink"])
-    ax.legend(fontsize=9, loc="upper left")
+    plaus = data[data["detector"] == "plausibility"]
+    for row in plaus.itertuples():
+        if row.flags == 0:
+            ax.annotate("no flags", (row.target, 0.02), ha="center", fontsize=8, color=t["muted"])
+    ax.legend(fontsize=9, loc="center left")
     fig.tight_layout()
     return _save(fig, "false_flag_rate", theme, out_dir)
 
