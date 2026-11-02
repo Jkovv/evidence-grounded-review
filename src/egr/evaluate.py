@@ -373,10 +373,10 @@ def runtime_table(all_runs: dict[str, list[Run]]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def evaluate(
-    results_dir: Path = config.RESULTS_DIR, processed_dir: Path = config.PROCESSED_DIR
-) -> dict[str, Any]:
+def evaluate(results_dir: Path | None = None, processed_dir: Path | None = None) -> dict[str, Any]:
     """Run the whole evaluation and write tables and the summary."""
+    results_dir = results_dir or config.RESULTS_DIR
+    processed_dir = processed_dir or config.PROCESSED_DIR
     cells_dir = results_dir / "cells"
     tables = results_dir / "tables"
     tables.mkdir(parents=True, exist_ok=True)

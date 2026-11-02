@@ -213,8 +213,10 @@ def make_split(ciks: list[int]) -> dict[int, str]:
     return {cik: ("development" if i < n_dev else "heldout") for i, cik in enumerate(ordered)}
 
 
-def prepare(raw_dir: Path = config.RAW_DIR, out_dir: Path = config.PROCESSED_DIR) -> dict[str, Any]:
+def prepare(raw_dir: Path | None = None, out_dir: Path | None = None) -> dict[str, Any]:
     """Run the whole preparation and return the summary that is also written to disk."""
+    raw_dir = raw_dir or config.RAW_DIR
+    out_dir = out_dir or config.PROCESSED_DIR
     out_dir.mkdir(parents=True, exist_ok=True)
     universe: list[int] = json.loads((out_dir / "universe.json").read_text(encoding="utf-8"))
     all_rows: list[dict[str, Any]] = []

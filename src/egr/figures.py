@@ -266,10 +266,10 @@ def faithfulness_figure(faith: pd.DataFrame, theme: str, out_dir: Path) -> Path 
     return _save(fig, "faithfulness", theme, out_dir)
 
 
-def make_figures(
-    tables_dir: Path = config.TABLES_DIR, out_dir: Path = config.FIGURES_DIR
-) -> list[Path]:
+def make_figures(tables_dir: Path | None = None, out_dir: Path | None = None) -> list[Path]:
     """All figures in both themes."""
+    tables_dir = tables_dir or config.TABLES_DIR
+    out_dir = out_dir or config.FIGURES_DIR
     out_dir.mkdir(parents=True, exist_ok=True)
     metrics = pd.read_csv(tables_dir / "budget_metrics.csv")
     by_type = pd.read_csv(tables_dir / "recall_by_type.csv")
