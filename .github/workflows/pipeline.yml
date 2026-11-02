@@ -1,0 +1,89 @@
+name: pipeline
+
+# Runs the quick pipeline from a clean environment on every push: downloads the
+# 24-company universe from SEC EDGAR, prepares it, runs every detection job,
+# evaluates, verifies the audit log and executes the notebook. A second job on
+# a separate runner reproduces the primary replicate from the same prepared
+# data and must get the same flags hash. The full run can be started by hand
+# from the Actions tab.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      full:
+        description: run make all instead of make all-quick
+        type: boolean
+        default: false
+
+env:
+  EGR_USER_AGENT: ${{ secrets.EGR_USER_AGENT || 'evidence-grounded-review ci j.kowalczuk326@gmail.com' }}
+
+jobs:
+  quick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    outputs:
+      flags_sha256: ${{ steps.hash.outputs.flags_sha256 }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: python -m pip install -e ".[dev]"
+      - name: make all-quick
+        if: ${{ !inputs.full }}
+        run: make all-quick
+      - name: flags hash
+        id: hash
+        if: ${{ !inputs.full }}
+        run: echo "flags_sha256=$(python -c "import pandas as pd; print(pd.read_csv('results-quick/tables/determinism.csv').flags_sha256.iloc[-1])")" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        if: ${{ !inputs.full && !cancelled() }}
+        with:
+          name: results-quick
+          path: |
+            results-quick
+            !results-quick/cells
+            !results-quick/audit
+      - uses: actions/upload-artifact@v4
+        if: ${{ !inputs.full && !cancelled() }}
+        with:
+          name: prepared-quick
+          path: |
+            data/processed-quick
+            data/manifest-quick.json
+      - name: make all
+        if: ${{ inputs.full }}
+        run: make all
+      - name: compare with the committed results
+        if: ${{ inputs.full }}
+        run: git diff --stat -- results notebooks docs/validation
+      - uses: actions/upload-artifact@v4
+        if: ${{ inputs.full && !cancelled() }}
+        with:
+          name: results
+          path: |
+            results
+            notebooks/walkthrough.ipynb
+            !results/cells
+            !results/audit
+
+  determinism-second-runner:
+    needs: quick
+    if: ${{ !inputs.full }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install -e ".[dev]"
+      - uses: actions/download-artifact@v4
+        with:
+          name: prepared-quick
+          path: data
+      - name: reproduce the primary replicate on another runner and python
+        run: EGR_QUICK=1 PYTHONPATH=src python -m egr.cli determinism --reset --expect "${{ needs.quick.outputs.flags_sha256 }}"

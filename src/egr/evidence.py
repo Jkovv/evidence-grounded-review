@@ -91,7 +91,7 @@ def from_rule(flag: RuleFlag, companies: Companies, view: dict[str, float]) -> E
         "period_end": flag.period_end,
         "flagged_cell_ids": list(flag.cell_ids),
         "sources": [source_entry(c, view[c.cell_id]) for c in cells],
-        "computed": dict(flag.computed),
+        "computed": {k: round(v, 2) for k, v in flag.computed.items()},
     }
     validate(record)
     return record
@@ -108,15 +108,15 @@ def from_score(
             seen.append(cid)
     sources = [source_entry(_lookup(companies, cid), view[cid]) for cid in seen]
     computed: dict[str, float] = {
-        "prediction": score.prediction,
-        "residual": score.residual,
-        "scale": score.scale,
+        "prediction": round(score.prediction, 2),
+        "residual": round(score.residual, 2),
+        "scale": round(score.scale, 2),
         "score": score.score,
         "p_value": p_value,
         "history_n": float(score.history_n),
     }
     for name, value in score.candidates.items():
-        computed[f"candidate_{name}"] = value
+        computed[f"candidate_{name}"] = round(value, 2)
     record: Evidence = {
         "flag_id": f"P|{score.cell_id}",
         "detector": "plausibility",

@@ -35,6 +35,7 @@ UNIT_FACTORS = {
     "trillions": 1e12,
 }
 ACCESSION = re.compile(r"\b\d{10}-\d{2}-\d{6}\b")
+FORM = re.compile(r"\b(?:10-K|10-Q|20-F|40-F|8-K|S-1|10-KT|10-QT)(?:/A)?(?![\w-])")
 ISO_DATE = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})\b")
 LONG_DATE = re.compile(
     r"\b("
@@ -135,6 +136,7 @@ class Allowed:
         self.years: set[int] = set()
         self.months: set[int] = set()
         self.accessions: set[str] = set()
+        self.forms: set[str] = set()
         self.items: set[str] = set()
         for s in record["sources"]:
             self.numbers.append(abs(float(s["value"])))
@@ -145,6 +147,7 @@ class Allowed:
             if s["ytd_months"]:
                 self.months.add(int(s["ytd_months"]))
             self.accessions.add(str(s["accession_number"]))
+            self.forms.add(str(s["form"]))
             self.items.add(str(s["item"]))
         self.dates.add(str(record["period_end"]))
         self.years.add(int(str(record["period_end"])[:4]))
@@ -206,6 +209,13 @@ def check_sentence(sentence: str, allowed: Allowed) -> SentenceCheck:
         else:
             result.failures.append(f"accession number {m.group(0)} not in evidence")
     rest = ACCESSION.sub(" ", rest)
+    for m in FORM.finditer(rest):
+        result.claims += 1
+        if m.group(0) in allowed.forms:
+            result.verified += 1
+        else:
+            result.failures.append(f"form {m.group(0)} not in evidence")
+    rest = FORM.sub(" ", rest)
     for m in LONG_DATE.finditer(rest):
         month_name, day, year = m.group(1), int(m.group(2)), int(m.group(3))
         month = next(

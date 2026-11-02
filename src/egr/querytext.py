@@ -111,8 +111,8 @@ def template(record: Evidence) -> str:
         body = (
             f"{_amount_with_span(main).capitalize()} is {money(abs(computed['residual']))} away "
             f"from the {money(computed['prediction'])} implied by the company's earlier filings "
-            f"and the other items of the period, a deviation of {computed['score']:.1f} times the "
-            f"usual spread for this item."
+            f"and the other items of the period, more than the usual spread of "
+            f"{money(computed['scale'])} for this item."
         )
         request = "Please tell us how the figure was determined and whether it is correctly stated."
     return f"{opening} {body} {request}"

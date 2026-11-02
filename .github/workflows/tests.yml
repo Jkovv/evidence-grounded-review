@@ -1,0 +1,38 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: python -m pip install -e ".[dev]"
+      - run: python -m ruff check src tests scripts data
+      - run: python -m ruff format --check src tests scripts data
+      - run: python -m mypy src scripts data
+      - name: tests with coverage
+        run: |
+          mkdir -p results
+          python -m pytest --cov=egr --cov-report=term-missing --cov-report=xml --junitxml=results/test-report.xml
+      - name: validation report
+        if: matrix.python-version == '3.13'
+        run: python scripts/validation_report.py --junit results/test-report.xml --coverage coverage.xml --out docs/validation
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-report-${{ matrix.python-version }}
+          path: |
+            results/test-report.xml
+            coverage.xml
+            docs/validation/test_report.md
+            docs/validation/traceability_matrix.md
