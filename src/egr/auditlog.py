@@ -14,7 +14,7 @@ import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, TextIO
 
 from egr.evidence import canonical
 
@@ -34,6 +34,7 @@ class AuditLog:
         self.path = path
         self.seq = 0
         self.prev_hash = GENESIS
+        self._handle: TextIO | None = None
         path.parent.mkdir(parents=True, exist_ok=True)
         if path.exists():
             for line in path.read_text(encoding="utf-8").splitlines():
@@ -41,6 +42,30 @@ class AuditLog:
                     last = json.loads(line)
                     self.seq = int(last["seq"]) + 1
                     self.prev_hash = str(last["hash"])
+
+    def _open(self) -> TextIO:
+        """Open the file for appending once and keep it; retry while a synchroniser holds it."""
+        for attempt in range(20):
+            try:
+                self._handle = open(self.path, "a", encoding="utf-8")  # noqa: SIM115
+                return self._handle
+            except PermissionError:
+                if attempt == 19:
+                    raise
+                time.sleep(0.5)
+        raise RuntimeError("unreachable")
+
+    def close(self) -> None:
+        """Close the file; later appends reopen it."""
+        if self._handle is not None:
+            self._handle.close()
+            self._handle = None
+
+    def __enter__(self) -> AuditLog:
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        self.close()
 
     def append(self, entry_type: str, payload: dict[str, Any]) -> dict[str, Any]:
         """Append one entry and return it."""
@@ -52,17 +77,9 @@ class AuditLog:
             "prev_hash": self.prev_hash,
         }
         entry["hash"] = entry_hash(entry)
-        line = canonical(entry) + "\n"
-        for attempt in range(20):
-            try:
-                with open(self.path, "a", encoding="utf-8") as f:
-                    f.write(line)
-                break
-            except PermissionError:
-                # a file synchroniser or virus scanner can hold the file for a moment
-                if attempt == 19:
-                    raise
-                time.sleep(0.5)
+        handle = self._handle or self._open()
+        handle.write(canonical(entry) + "\n")
+        handle.flush()
         self.seq += 1
         self.prev_hash = entry["hash"]
         return entry

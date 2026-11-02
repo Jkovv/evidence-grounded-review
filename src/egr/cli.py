@@ -154,6 +154,13 @@ def cmd_detect(args: argparse.Namespace) -> int:
     )
     shortfalls = []
     for tag, rate, replicate in jobs:
+        stem = config.CELLS_DIR / f"{tag}_r{replicate:02d}"
+        if not args.force and all(
+            Path(f"{stem}_{part}").exists()
+            for part in ("cells.parquet", "flags.json", "evidence.jsonl", "meta.json")
+        ):
+            print(f"{tag} r{replicate:02d}: already written, skipped")
+            continue
         t = time.perf_counter()
         injection = inject(companies, rate, replicate) if rate > 0 else {}
         if rate > 0:
@@ -171,7 +178,12 @@ def cmd_detect(args: argparse.Namespace) -> int:
             f"{time.perf_counter() - t:.0f} s"
         )
     config.TABLES_DIR.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(shortfalls).to_csv(config.TABLES_DIR / "injection_shortfall.csv", index=False)
+    path = config.TABLES_DIR / "injection_shortfall.csv"
+    frame = pd.DataFrame(shortfalls)
+    if path.exists() and not args.force:
+        frame = pd.concat([pd.read_csv(path), frame], ignore_index=True)
+    frame.to_csv(path, index=False)
+    log.close()
     return 0
 
 
@@ -377,6 +389,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     p = sub.add_parser("detect", help="run every detection job")
     p.add_argument("--only", default="", help="comma separated tags to run")
+    p.add_argument("--force", action="store_true", help="rerun jobs whose outputs exist")
     p.set_defaults(func=cmd_detect)
     p = sub.add_parser("determinism", help="run the primary replicate twice and compare")
     p.add_argument("--expect", default="", help="flags hash the run must reproduce")
