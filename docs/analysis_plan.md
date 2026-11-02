@@ -364,7 +364,7 @@ over replicates.
   rules; those of items outside any identity only by the plausibility layer.
 * Copy-forward and cross-company swaps are largely missed by both layers,
   because a copied value is by construction a plausible one; recall under 0.2
-  at the primary budget would not be a surprise.
+  at the primary budget is expected for both.
 * Real amendments are rarely visible in a single value, so recall of
   amended-changed cells at the primary budget is expected to be low (under
   0.1); the interesting number is the enrichment.
