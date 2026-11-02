@@ -441,7 +441,8 @@ changes the rules, the score, the split, the injection or the budgets.
    through Ollama, not `qwen3:8b`: the 8 billion parameter model did not fit
    in the memory available next to the pipeline, and `qwen3:4b` wrote its
    reasoning into the letter even with thinking switched off (the texts were
-   rejected by the checker as a whole). The text sample is 50 flags rather than 200, because the small model needs over a minute per text on the
+   rejected by the checker as a whole). The text sample is 50 flags rather
+   than 200, because the small model needs over a minute per text on the
    development machine and the three variants run on the same flags. The
    Anthropic backend is implemented and selected with
    `EGR_LLM_BACKEND=anthropic`; it was not run here because no API key was
