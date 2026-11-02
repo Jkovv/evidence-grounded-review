@@ -23,7 +23,7 @@ Keep a Changelog and the project uses semantic versioning.
 - template and language-model query text with a faithfulness checker and
   template fallback
 - held-out evaluation with a paired company bootstrap, figures, an executed
-  walkthrough notebook and a short methods paper
+  walkthrough notebook and working notes on the run
 - validation package: numbered requirements, traceability matrix and test
   report generated from the tests, known limitations
 - CI: lint, type check, tests with coverage on Python 3.11 and 3.13, the

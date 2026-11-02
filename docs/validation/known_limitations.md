@@ -2,7 +2,7 @@
 
 What the validation package does not cover, and what the system does not do.
 Read together with `requirements.md` and the limitations section of
-`docs/paper.md`.
+`docs/notes.md`.
 
 ## Scope of the validation package
 
