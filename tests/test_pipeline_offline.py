@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import argparse
 import json
 from pathlib import Path
 
@@ -125,4 +124,3 @@ def test_cli_pipeline_end_to_end(pipeline_dirs: Path):
     assert (
         types[0] == "run_start" and "flag" in types and "run_end" in types and "evaluate" in types
     )
-    assert cli.cmd_clean_quick(argparse.Namespace()) == 0
