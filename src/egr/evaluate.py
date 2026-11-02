@@ -220,24 +220,38 @@ def false_flag_table(
     for q in config.BH_TARGETS:
         col = f"bh_{int(q * 100):02d}"
         for detector in ("plausibility", "combined"):
-            ffr, recall, flags, false = [], [], [], []
+            ffr, recall, flags, false, collateral, ffr_outside = [], [], [], [], [], []
             for r in runs:
                 cells = r.cells
                 flagged = cells[col].to_numpy(dtype=bool)
                 if detector == "combined":
                     flagged = flagged | (cells["rank_rules"].to_numpy() > 0)
                 true = (cells["injected"] | cells["amended_changed"]).to_numpy(dtype=bool)
+                # a period that holds an injected cell: a false flag there is collateral,
+                # since the injected value also enters its partners' predictions and rules
+                touched = (
+                    cells.groupby(["cik", "period_end"])["injected"]
+                    .transform("any")
+                    .to_numpy(dtype=bool)
+                )
                 comp = cells["cik"].map(index).to_numpy()
                 n = len(companies)
                 w_flags = weights @ np.bincount(comp, weights=flagged, minlength=n)
                 w_false = weights @ np.bincount(comp, weights=flagged & ~true, minlength=n)
                 w_true = weights @ np.bincount(comp, weights=true, minlength=n)
                 w_caught = weights @ np.bincount(comp, weights=flagged & true, minlength=n)
+                w_coll = weights @ np.bincount(comp, weights=flagged & ~true & touched, minlength=n)
+                w_flags_out = weights @ np.bincount(comp, weights=flagged & ~touched, minlength=n)
+                w_false_out = weights @ np.bincount(
+                    comp, weights=flagged & ~true & ~touched, minlength=n
+                )
                 with np.errstate(invalid="ignore", divide="ignore"):
                     ffr.append(w_false / w_flags)
                     recall.append(w_caught / w_true)
+                    ffr_outside.append(w_false_out / w_flags_out)
                 flags.append(w_flags)
                 false.append(w_false)
+                collateral.append(w_coll)
             f = np.nanmean(np.vstack(ffr), axis=0)
             rc = np.nanmean(np.vstack(recall), axis=0)
             lo, hi = interval(f)
@@ -252,6 +266,12 @@ def false_flag_table(
                     "lo": lo,
                     "hi": hi,
                     "recall_of_errors": float(rc[0]),
+                    "false_flags_in_periods_with_an_injected_cell": float(
+                        np.mean(np.vstack(collateral), axis=0)[0]
+                    ),
+                    "false_flag_rate_outside_those_periods": float(
+                        np.nanmean(np.vstack(ffr_outside), axis=0)[0]
+                    ),
                     "replicates": len(runs),
                 }
             )

@@ -15,6 +15,7 @@ def _frame() -> pd.DataFrame:
                 {
                     "cell_id": f"{cik}|{i}",
                     "cik": cik,
+                    "period_end": f"2020-{i % 40 + 1:02d}",
                     "injected": bool(rng.random() < 0.05),
                     "amended_changed": False,
                     "error_type": "",
