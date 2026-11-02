@@ -259,7 +259,7 @@ def cmd_texts(_: argparse.Namespace) -> int:
         {
             "rows": len(rows),
             "seconds": time.perf_counter() - t,
-            "summary": summary.to_dict(orient="records"),
+            "summary": json.loads(summary.to_json(orient="records")),
         },
     )
     print(summary.to_string())

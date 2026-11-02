@@ -111,6 +111,8 @@ class BudgetEvaluator:
         ranked = self.cells[self.cells[col] > 0].sort_values(col)
         limit = int(min(len(ranked), 6 * k.max() + 1000))
         ranked = ranked.head(limit)
+        if ranked.empty:
+            return out
         positions = self.cells.index.get_indexer(ranked.index)
         comp = self.comp[positions]
         target = self.target[positions]
