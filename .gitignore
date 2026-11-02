@@ -1,6 +1,7 @@
 # SEC data is never committed; the manifest with checksums is (see data/README.md)
 data/raw/
 data/processed/
+data/processed-quick/
 data/*.log
 
 # row-level outputs derived from the data; aggregate tables and figures are committed
