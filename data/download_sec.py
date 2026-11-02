@@ -28,7 +28,7 @@ if "EGR_QUICK" not in os.environ and "--quick" in sys.argv:
     os.environ["EGR_QUICK"] = "1"
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from egr import config  # noqa: E402
+from egr import config
 
 RETRY_STATUSES = {429, 500, 502, 503, 504}
 
@@ -132,7 +132,9 @@ def select_universe(raw_dir: Path) -> list[int]:
     candidates = sorted(
         c
         for c in early_vals
-        if c in late_vals and early_vals[c] >= config.MIN_ASSETS and late_vals[c] >= config.MIN_ASSETS
+        if c in late_vals
+        and early_vals[c] >= config.MIN_ASSETS
+        and late_vals[c] >= config.MIN_ASSETS
     )
     rng = random.Random(config.SEED)
     return sorted(rng.sample(candidates, config.N_COMPANIES))
@@ -159,7 +161,9 @@ def download_all(dl: Downloader, universe_path: Path) -> None:
     missing: list[int] = []
     for i, cik in enumerate(universe, start=1):
         facts = dl.raw_dir / "companyfacts" / f"{cik_path(cik)}.json"
-        if not dl.have(facts) and not dl.fetch(f"api/xbrl/companyfacts/{cik_path(cik)}.json", facts):
+        if not dl.have(facts) and not dl.fetch(
+            f"api/xbrl/companyfacts/{cik_path(cik)}.json", facts
+        ):
             missing.append(cik)
             continue
         subs = dl.raw_dir / "submissions" / f"{cik_path(cik)}.json"

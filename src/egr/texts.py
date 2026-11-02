@@ -56,9 +56,10 @@ def select_flags(
         records = by_cell.get(cid, [])
         rules = [r for r in records if r["detector"] == "rule"]
         plaus = [r for r in records if r["detector"] == "plausibility"]
-        record = (rules or plaus or [None])[0]
-        if record is not None:
-            chosen.append((cid, record))
+        if rules:
+            chosen.append((cid, rules[0]))
+        elif plaus:
+            chosen.append((cid, plaus[0]))
     return chosen
 
 
