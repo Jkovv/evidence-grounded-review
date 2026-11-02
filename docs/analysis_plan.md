@@ -428,14 +428,12 @@ changes the rules, the score, the split, the injection or the budgets.
 4. **The template no longer states the score.** It states the usual spread
    (the scale) in dollars instead of "x times the usual spread", for the same
    reason: a one-decimal score cannot be matched exactly against the record.
-5. **Local model.** The local open model is `qwen3:4b` rather than
-   `qwen3:8b`, because the 8 billion parameter model did not fit in the
-   memory available on the development machine next to the pipeline. The
-   model is called through Ollama's native chat endpoint rather than its
-   OpenAI-compatible one, because only the native endpoint can switch the
-   model's thinking mode off; with thinking on, the model spent its token
-   budget on reasoning and returned empty letters. The OpenAI-compatible
-   backend remains available for other servers.
+5. **Local model endpoint.** The local model is called through Ollama's
+   native chat endpoint rather than the OpenAI-compatible one named in the
+   plan, because only the native endpoint can switch a model's thinking mode
+   off; with thinking on, the qwen3 models spent their token budget on
+   reasoning and returned empty letters. The OpenAI-compatible backend
+   remains available for other servers.
 6. **Rules and scores are computed for held-out companies only in a
    replicate.** Development companies are scored once, on the filed data,
    for the calibration. This changes runtime only.
@@ -449,3 +447,10 @@ changes the rules, the score, the split, the injection or the budgets.
    Anthropic backend is implemented and selected with
    `EGR_LLM_BACKEND=anthropic`; it was not run here because no API key was
    available in the environment.
+8. **One exploratory split of the false flags.** After the achieved
+   false-flag rate came out above target, the false-flag table was given two
+   more columns: the false flags that sit in a company-period holding an
+   injected cell, and the false-flag rate outside such periods. The split
+   says how much of the excess is collateral from a wrong neighbour (the plan
+   said no explaining-away would be attempted) and how much is not. It is
+   descriptive and changes no flag.
