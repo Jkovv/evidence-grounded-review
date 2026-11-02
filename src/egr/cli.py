@@ -257,7 +257,7 @@ def cmd_texts(_: argparse.Namespace) -> int:
     summary = summarise(rows)
     config.TABLES_DIR.mkdir(parents=True, exist_ok=True)
     summary.to_csv(config.TABLES_DIR / "faithfulness.csv", index=False)
-    write_rows(rows, config.CELLS_DIR / "texts.jsonl")
+    write_rows(rows, config.RESULTS_DIR / "texts.jsonl")
     examples = [r for r in rows if r.variant != "template" and r.accepted][: config.N_TEXT_EXAMPLES]
     by_flag = {record["flag_id"]: record for _, record in flags}
     with open(config.RESULTS_DIR / "text_examples.md", "w", encoding="utf-8", newline="\n") as f:

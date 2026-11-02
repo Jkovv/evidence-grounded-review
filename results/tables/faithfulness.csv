@@ -1,0 +1,4 @@
+variant,run,texts,generation_errors,claims,claims_verified_share,texts_with_unverified_claim_share,rejection_rate,accepted,accepted_not_exact_share,model,backend
+template,True,50,0,581,1.0,0.0,0.0,50,0.0,,template
+llm_evidence,True,50,0,340,0.9411764705882353,0.4,0.4,30,0.09999999999999998,llama3.2:3b,ollama
+llm_raw,True,50,0,454,0.9251101321585903,0.36,0.36,32,0.0,llama3.2:3b,ollama
