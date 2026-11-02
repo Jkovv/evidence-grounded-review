@@ -84,5 +84,5 @@ files = ["src", "scripts", "data"]
 mypy_path = "src"
 
 [[tool.mypy.overrides]]
-module = ["scipy.*", "matplotlib.*", "pyarrow.*"]
+module = ["scipy.*", "matplotlib.*", "pyarrow.*", "anthropic", "anthropic.*"]
 ignore_missing_imports = true
