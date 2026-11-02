@@ -1,0 +1,85 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evidence-grounded-review"
+version = "0.1.0"
+description = "Review of longitudinal, multi-source records with evidence-grounded outputs and controlled error rates, demonstrated on SEC XBRL company facts"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Julia Kowalczuk", email = "j.kowalczuk326@gmail.com" }]
+requires-python = ">=3.11"
+dependencies = [
+    "numpy==2.5.4",
+    "pandas==3.1.0",
+    "pyarrow==26.0.0",
+    "scipy==1.18.1",
+    "matplotlib==3.11.2",
+    "jsonschema==4.26.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.2.0",
+    "pytest-cov==7.1.0",
+    "ruff==0.17.3",
+    "mypy==2.4.1",
+    "pre-commit==4.7.0",
+    "pandas-stubs==3.1.0.261029",
+    "types-jsonschema==4.26.0.20261006",
+    "jupyterlab==4.6.5",
+    "nbconvert==7.17.2",
+    "nbformat==5.11.1",
+    "ipykernel==7.4.0",
+]
+anthropic = ["anthropic==2.3.0"]
+
+[project.scripts]
+egr = "egr.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+egr = ["schemas/*.json", "py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = ["req(id): the validation requirement a test gives evidence for"]
+addopts = "-q --strict-markers"
+
+[tool.coverage.run]
+source = ["egr"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests", "scripts", "data"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF", "ANN", "D"]
+ignore = ["D203", "D213", "D105", "D107", "ANN401", "RUF012"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D", "ANN"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unreachable = true
+files = ["src", "scripts", "data"]
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = ["scipy.*", "matplotlib.*", "pyarrow.*"]
+ignore_missing_imports = true
