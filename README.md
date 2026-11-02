@@ -237,7 +237,11 @@ Set `EGR_USER_AGENT="Your Name your@email"` for the SEC download,
 `EGR_LLM_BACKEND` (`anthropic`, `ollama` or `openai_compatible`) with
 `EGR_LLM_MODEL` to run the language-model variants of the query text; without
 them only the template runs. The full run takes about an hour for detection
-on a laptop plus the time the language model needs. CI runs the tests on
+on a laptop plus the time the language model needs. The committed results
+were produced on Python 3.13 with numpy 2.5.4 and scipy 1.18.1; on Python
+3.11, which those versions do not support, numpy 2.3.5 and scipy 1.17.0 are
+installed instead. The detection core uses neither, so flags and evidence
+are unaffected; the bootstrap intervals use numpy's generator. CI runs the tests on
 Python 3.11 and 3.13 and the quick pipeline from a clean environment on every
 push.
 
