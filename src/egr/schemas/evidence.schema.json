@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Jkovv/evidence-grounded-review/schemas/evidence.schema.json",
+  "title": "Evidence record",
+  "description": "The source values and computed quantities behind one flag, and nothing else.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["flag_id", "detector", "company", "period_end", "flagged_cell_ids", "sources", "computed"],
+  "properties": {
+    "flag_id": {"type": "string", "minLength": 1},
+    "detector": {"type": "string", "enum": ["rule", "plausibility"]},
+    "rule": {"type": ["string", "null"], "pattern": "^R[1-7]$"},
+    "rule_statement": {"type": ["string", "null"]},
+    "company": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cik", "name"],
+      "properties": {
+        "cik": {"type": "integer", "minimum": 1},
+        "name": {"type": "string"}
+      }
+    },
+    "period_end": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+    "flagged_cell_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["cell_id", "item", "label", "element", "period_start", "period_end", "ytd_months",
+                     "value", "unit", "accession_number", "form", "filed", "retrieved"],
+        "properties": {
+          "cell_id": {"type": "string"},
+          "item": {"type": "string"},
+          "label": {"type": "string"},
+          "element": {"type": "string"},
+          "period_start": {"type": "string"},
+          "period_end": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+          "ytd_months": {"type": "integer", "minimum": 0, "maximum": 13},
+          "value": {"type": "number"},
+          "unit": {"type": "string", "const": "USD"},
+          "accession_number": {"type": "string", "pattern": "^[0-9]{10}-[0-9]{2}-[0-9]{6}$"},
+          "form": {"type": "string"},
+          "filed": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+          "retrieved": {"type": "string"}
+        }
+      }
+    },
+    "computed": {
+      "type": "object",
+      "additionalProperties": {"type": "number"}
+    }
+  }
+}
